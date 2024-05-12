@@ -41,7 +41,6 @@ const login = async (
     const connection = await Connect();
     const user: any = await Query<IUser>(connection, query, [login.username]);
 
-    console.log(user)
     connection.end();
 
     const result = await new Promise((resolve, reject) => {

@@ -19,7 +19,15 @@
                 <label for="password" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Password</label>
               </div>
               <div class="relative flex justify-between items-center">
-                <button :disabled=btn_state type="submit" class="bg-blue-500 text-white rounded-md px-3.5 py-1">Submit</button>
+                <button :disabled=btn_state type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center inline-flex items-center">
+                    <div v-if="btn_state">
+                      <IconLoading classes="inline w-4 h-4 me-3 text-white animate-spin" />
+                      Loading...
+                    </div>
+                    <span v-else>
+                      Sign in
+                    </span>
+                  </button>
                 <p class="text-sm">
                   Don't have an account? 
                   <router-link to="/register" class="hover:underline hover:text-blue-500">Sign up Now!</router-link>
@@ -38,9 +46,11 @@
   import { useRouter } from 'vue-router';
   import { useAuthStore } from '../stores/auth.store';
   import { useToast } from 'vue-toast-notification';
+  import config from '../utils/config';
+  import IconLoading from '../components/icons/IconLoading.vue';
 
-  const router = useRouter()
-    
+  const router = useRouter();
+
   const auth = useAuthStore();
   const toast = useToast();
 
@@ -58,7 +68,6 @@
       btn_state.value = true;
 
       const result = await auth.handleLogin(form.value);
-      console.log(result)
       if (result.stats === 0) {
         toast.open({
           message: result.msg,
@@ -68,7 +77,7 @@
         })
         btn_state.value = false;
       } else {
-        router.push({ name: 'home' })
+        window.location.href = result.spotify;
       }
     } catch (error) {
       toast.open({

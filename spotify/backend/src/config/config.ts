@@ -2,6 +2,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Spotify
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URL = process.env.REDIRECT_URL;
+
+const SPOTIFY_API = {
+  client_id: CLIENT_ID,
+  client_secret: CLIENT_SECRET,
+  redirect_uri: REDIRECT_URL,
+}
+
 const MYSQL_HOST = process.env.MYSQLHOST || "localhost";
 const MYSQL_USER = process.env.MYSQLUSER || "root";
 const MYSQL_PASSWORD = process.env.MYSQLPASSWORD || "31N$t31n";
@@ -23,7 +34,7 @@ const SERVER_SECRET_KEY = process.env.SERVER_SECRET_KEY || "cpcEncryptedSecretKe
 const SERVER_REFRESH_SECRET_KEY = process.env.SERVER_REFRESH_SECRET_KEY || "cpcEncryptedSecretKey";
 
 const SERVER_RESET_SECRET_KEY = process.env.SERVER_RESET_SECRET_KEY || 'cpcEncryptedSecretKey';
-const SERVER_RESET_EXPIRETIME = process.env.SERVER_RESET_EXPIRETIME || '30m';
+const SERVER_RESET_EXPIRETIME = process.env.SERVER_RESET_EXPIRETIME || '60m';
 
 const MYSQL_URL = `mariadb://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${SERVER_PORT}/${MYSQL_DATABASE}`
 
@@ -44,7 +55,8 @@ const SERVER = {
 const config = {
   mysql: MYSQL,
   server: SERVER,
-  mysqlurl: MYSQL_URL
+  mysqlurl: MYSQL_URL,
+  spotify: SPOTIFY_API,
 };
 
 export default config;

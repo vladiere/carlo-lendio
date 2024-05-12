@@ -10,17 +10,21 @@ const router = createRouter({
       meta: { auth: true },
       component: () => import('../layouts/MainLayout.vue'),
       children: [
-        { path: '', name: 'home_view', meta: { auth: true }, component: () => import('../views/HomeView.vue') }
+        { path: '', name: 'home_view', meta: { auth: true }, component: () => import('../views/HomeView.vue') },
+        { path: '', name: 'play_track', meta: { auth: true }, component: () => import('../views/HomeView.vue') },
+        { path: '/rooms', name: 'rooms', meta: { auth: true }, component: () => import('../views/ChatRoomsView.vue') },
       ]
     },
     {
       path: '/login',
       name: 'login',
+      meta: { auth: false },
       component: () => import('../views/LoginView.vue')
     },
     {
       path: '/register',
       name: 'register',
+      meta: { auth: false },
       component: () => import('../views/RegisterView.vue')
     },
     {
@@ -34,6 +38,8 @@ router.beforeEach((to: any, from: any, next: any) => {
   const auth = useAuthStore();
   if (to.meta.auth && !auth.isAuthenticated) {
     next({ name: 'login' })
+  } else if (!to.meta.auth && auth.isAuthenticated) {
+    next({ name: 'home_view' })
   } else {
     next()
   }

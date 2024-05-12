@@ -1,6 +1,15 @@
+import SpotifyWebApi from 'spotify-web-api-node';
 import { Request, Response, NextFunction } from "express";
 import authService from "../services/auth.service";
 import { UserForCreate, UserForLogin, UserForUpdate } from '../models/auth.model';
+import { generateRandomString } from '../utils/generator';
+import config from "../config/config";
+
+const spotifyApi = new SpotifyWebApi({
+    clientId: config.spotify.client_id,
+    clientSecret: config.spotify.client_secret,
+    redirectUri: config.spotify.redirect_uri,
+  });
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -17,8 +26,8 @@ const login = async (req: Request, res: Response) => {
   try {
     const login: UserForLogin = req.body;
 
-    console.log(login)
     const user = await authService.login(login);
+
     return res.status(200).json({ user });
   } catch (error: any) {
     console.error(`Login Error: ${error}`);

@@ -1,20 +1,32 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-// import RegisterRequest from '../types/auth';
+import config from '../utils/config';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user_id: 0,
     refresh_token: '',
     access_token: '',
+    spotify_refresh: '',
+    spotify_access: '',
+    expires_in: 0,
     auth: false,
   }),
   getters: {
     isAuthenticated: (state) => state.auth,
     getAccessToken: (state) => state.access_token,
     getRefreshToken: (state) => state.refresh_token,
+    getSpotifyRefresh: (state) => state.spotify_refresh,
+    getSpotifyAccess: (state) => state.spotify_access,
   },
   actions: {
+    refreshedSpotifyAccessToken(data: { accessToken: string, expiresIn: number }) {
+      this.spotify_access = data.accessToken;
+      this.expires_in = data.expiresIn;
+    },
+    refreshedAccessToken(token: string) {
+      this.access_token = token;
+    },
     setAuthenticated(data: { id: number, accessToken: string, refreshToken: string }) {
       console.log(data)
       this.auth = true;
@@ -22,12 +34,33 @@ export const useAuthStore = defineStore('auth', {
       this.refresh_token = data.refreshToken;
       this.access_token = data.accessToken;
     },
+    async handleLoginSpotify(code: string) {
+      const response = await axios.post('/api/spotify/login', { code });
+
+      this.spotify_refresh = response.data.refreshToken;
+      this.spotify_access = response.data.accessToken;
+      this.expires_in = response.data.expiresIn;
+    },
     async handleLogin(data: { username: string, password: string}) {
       try {
+        if (data.username === '') {
+           return {
+            msg: 'Username is required',
+            stats: 0,
+          };         
+        } else if (data.password === '') {
+           return {
+            msg: 'Password is required',
+            stats: 0,
+          };         
+        }
+
         const response = await axios.post('/api/login', data)
+
         this.setAuthenticated(response.data.user);
         return {
           msg: 'success',
+          spotify: config.spotify.uri,
           stats: 1,
         };
       } catch (error) {
@@ -51,8 +84,14 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async handleLogout() {
-      await axios.post('/logout');
+      await axios.post('/api/logout', { refreshToken: this.getRefreshToken });
       this.auth = false;
+      this.user_id = 0;
+      this.refresh_token = '';
+      this.access_token = '';
+      this.spotify_access = '';
+      this.spotify_refresh = '';
+      this.expires_in = 0;
     }
   },
   persist: {
