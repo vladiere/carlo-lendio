@@ -18,3 +18,11 @@ export interface DefaultTracks {
   popularity: number;
   uri: string;
 }
+
+export interface Message {
+  socketId: string;
+  name: string;
+  timestamp: string;
+  user_id: number;
+  message: string;
+}

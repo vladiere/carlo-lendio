@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import config from '../utils/config';
+import { useSocketStore } from '../stores/socket.store';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -28,7 +28,6 @@ export const useAuthStore = defineStore('auth', {
       this.access_token = token;
     },
     setAuthenticated(data: { id: number, accessToken: string, refreshToken: string }) {
-      console.log(data)
       this.auth = true;
       this.user_id = data.user_id;
       this.refresh_token = data.refreshToken;
@@ -56,11 +55,12 @@ export const useAuthStore = defineStore('auth', {
         }
 
         const response = await axios.post('/api/login', data)
+        const res = await axios.get('/api/spotify/');
 
         this.setAuthenticated(response.data.user);
         return {
           msg: 'success',
-          spotify: config.spotify.uri,
+          spotify: res.data.authorizeURL,
           stats: 1,
         };
       } catch (error) {
@@ -84,7 +84,10 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async handleLogout() {
+      const socketStore = useSocketStore();
+
       await axios.post('/api/logout', { refreshToken: this.getRefreshToken });
+      socketStore.removeSocketId();
       this.auth = false;
       this.user_id = 0;
       this.refresh_token = '';

@@ -12,7 +12,6 @@ const router = createRouter({
       children: [
         { path: '', name: 'home_view', meta: { auth: true }, component: () => import('../views/HomeView.vue') },
         { path: '', name: 'play_track', meta: { auth: true }, component: () => import('../views/HomeView.vue') },
-        { path: '/rooms', name: 'rooms', meta: { auth: true }, component: () => import('../views/ChatRoomsView.vue') },
       ]
     },
     {
