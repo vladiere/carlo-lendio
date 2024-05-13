@@ -41,6 +41,10 @@ io.on("connection", (socket) => {
 
   io.emit('messages', messages)
 
+  socket.on('typing', data => {
+    io.emit('is_typing', data);
+  });
+
 	// io.emit() is used to send events to all the connected clients
 	// io.emit("getOnlineUsers", Object.keys(userSocketMap));
 	//
